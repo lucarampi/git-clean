@@ -14,12 +14,14 @@
     "git",
     "cli",
     "cleanup",
-    "branch"
+    "branch",
+    "noob"
   ],
   "author": "Luca Alfaro Rampinelli",
   "license": "MIT",
   "dependencies": {
     "inquirer": "^12.7.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "packageManager": "pnpm@10.5.2"
 }
