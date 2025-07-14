@@ -1,10 +1,10 @@
 {
-  "name": "@anlukinha/git-clean",
-  "version": "1.0.0",
+  "name": "@anlukinha/git-cleanup",
+  "version": "0.0.1",
   "description": "A simple CLI tool to clean up local Git branches whose remote counterparts have been deleted.",
-  "main": "git-clean.js",
+  "main": "git-cleanup.js",
   "bin": {
-    "git-clean": "git-clean.js"
+    "git-cleanup": "git-cleanup.js"
   },
   "type": "module",
   "scripts": {
@@ -16,8 +16,8 @@
     "cleanup",
     "branch"
   ],
-  "author": "Your Name",
-  "license": "ISC",
+  "author": "Luca Alfaro Rampinelli",
+  "license": "MIT",
   "dependencies": {
     "inquirer": "^12.7.0"
   },
