@@ -1,6 +1,6 @@
-# git-clean 🧹
+# git-cleanup 🧹
 
-`git-clean` is a simple and powerful interactive command-line tool to help you keep your local Git repository tidy. It finds local branches whose upstream (remote) branch has been deleted and guides you through deleting them, one by one.
+`git-cleanup` is a simple and powerful interactive command-line tool to help you keep your local Git repository tidy. It finds local branches whose upstream (remote) branch has been deleted and guides you through deleting them, one by one.
 
 ## ⚠️ Disclaimer
 
@@ -20,7 +20,7 @@
 
 ## ⚙️ Installation
 
-You can install `git-clean` either locally within a project or globally on your system.
+You can install `git-cleanup` either locally within a project or globally on your system.
 
 ### Local Installation (Recommended)
 
@@ -28,27 +28,27 @@ Installing it as a development dependency ensures that everyone on your team use
 
 **Using npm:**
 ```bash
-npm install --save-dev git-clean-cli
+npm install --save-dev git-cleanup
 ```
-*(Note: Use the actual package name on npm, e.g., `git-clean-cli`)*
+*(Note: Use the actual package name on npm, e.g., `git-cleanup`)*
 
 **Using yarn:**
 ```bash
-yarn add --dev git-clean-cli
+yarn add --dev git-cleanup
 ```
 
 ### Global Installation
 
-A global installation allows you to run `git-clean` from any repository on your machine.
+A global installation allows you to run `git-cleanup` from any repository on your machine.
 
 **Using npm:**
 ```bash
-npm install --global git-clean-cli
+npm install --global git-cleanup
 ```
 
 **Using yarn:**
 ```bash
-yarn global add git-clean-cli
+yarn global add git-clean
 ```
 
 ## 🚀 Setup & Usage
@@ -64,7 +64,7 @@ Open your `package.json` and add a new script to the `scripts` object:
   "name": "my-awesome-project",
   "version": "1.0.0",
   "scripts": {
-    "clean:branches": "git-clean"
+    "clean:branches": "git-cleanup"
   }
 }
 ```
@@ -87,7 +87,7 @@ yarn clean:branches
 
 If you installed the tool globally, you can run it directly in any Git repository:
 ```bash
-git-clean
+git-cleanup
 ```
 The tool will then start its interactive session.
 
@@ -101,7 +101,7 @@ Feel free to:
 
 * **Submit a Pull Request:** If you want to contribute code, please open an issue first to discuss the proposed changes. This helps us coordinate our efforts.
 
-Please read our `CONTRIBUTING.md` file for more details on our code of conduct and the process for submitting pull requests.
+<!-- Please read our `CONTRIBUTING.md` file for more details on our code of conduct and the process for submitting pull requests. -->
 
 ## 📜 License
 
