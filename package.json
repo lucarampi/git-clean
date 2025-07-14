@@ -1,5 +1,5 @@
 {
-  "name": "@anlukinha/git-cleanup",
+  "name": "@git-cleanup",
   "version": "0.0.1",
   "description": "A simple CLI tool to clean up local Git branches whose remote counterparts have been deleted.",
   "main": "git-cleanup.js",
@@ -23,5 +23,8 @@
     "inquirer": "^12.7.0"
   },
   "devDependencies": {},
-  "packageManager": "pnpm@10.5.2"
+  "packageManager": "pnpm@10.5.2",
+  "publishConfig": {
+    "access": "public"
+  }
 }
