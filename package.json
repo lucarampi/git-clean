@@ -1,5 +1,5 @@
 {
-  "name": "git-cleanup",
+  "name": "oh-my-git",
   "version": "0.0.2",
   "description": "A simple CLI tool to clean up local Git branches whose remote counterparts have been deleted.",
   "main": "git-cleanup.js",

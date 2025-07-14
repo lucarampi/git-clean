@@ -1,6 +1,6 @@
-# git-cleanup 🧹
+# oh-my-git 🧹
 
-`git-cleanup` is a simple and powerful interactive command-line tool to help you keep your local Git repository tidy. It finds local branches whose upstream (remote) branch has been deleted and guides you through deleting them, one by one.
+`oh-my-git` is a simple and powerful interactive command-line tool to help you keep your local Git repository tidy. It finds local branches whose upstream (remote) branch has been deleted and guides you through deleting them, one by one.
 
 ## ⚠️ Disclaimer
 
@@ -20,7 +20,7 @@
 
 ## ⚙️ Installation
 
-You can install `git-cleanup` either locally within a project or globally on your system.
+You can install `oh-my-git` either locally within a project or globally on your system.
 
 ### Local Installation (Recommended)
 
@@ -28,22 +28,22 @@ Installing it as a development dependency ensures that everyone on your team use
 
 **Using npm:**
 ```bash
-npm install --save-dev git-cleanup
+npm install --save-dev oh-my-git
 ```
-*(Note: Use the actual package name on npm, e.g., `git-cleanup`)*
+*(Note: Use the actual package name on npm, e.g., `oh-my-git`)*
 
 **Using yarn:**
 ```bash
-yarn add --dev git-cleanup
+yarn add --dev oh-my-git
 ```
 
 ### Global Installation
 
-A global installation allows you to run `git-cleanup` from any repository on your machine.
+A global installation allows you to run `oh-my-git` from any repository on your machine.
 
 **Using npm:**
 ```bash
-npm install --global git-cleanup
+npm install --global oh-my-git
 ```
 
 **Using yarn:**
@@ -64,7 +64,7 @@ Open your `package.json` and add a new script to the `scripts` object:
   "name": "my-awesome-project",
   "version": "1.0.0",
   "scripts": {
-    "clean:branches": "git-cleanup"
+    "clean:branches": "oh-my-git"
   }
 }
 ```
@@ -87,7 +87,7 @@ yarn clean:branches
 
 If you installed the tool globally, you can run it directly in any Git repository:
 ```bash
-git-cleanup
+oh-my-git
 ```
 The tool will then start its interactive session.
 
