@@ -1,68 +1,106 @@
-
 import { execFileSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+
+// --- Helper functions ---
 
 /**
- * A helper function to dynamically import inquirer.
- * This is required because inquirer is a CommonJS module.
+ * A helper function to dynamically import dependencies.
  */
-async function getInquirer() {
+async function getDependencies() {
   const { default: inquirer } = await import('inquirer');
-  return inquirer;
+  const { default: chalk } = await import('chalk');
+  return { inquirer, chalk };
+}
+
+/**
+ * Reads protected branches from a config file or returns a default list.
+ * @param {object} chalk - The chalk instance for logging.
+ * @returns {string[]} An array of protected branch names.
+ */
+function getProtectedBranches(chalk) {
+  const configPath = path.resolve(process.cwd(), '.git-cleanup-config.json');
+  const defaults = ['main', 'master', 'develop', 'dev', 'prod', 'production'];
+
+  try {
+    if (fs.existsSync(configPath)) {
+      const configFile = fs.readFileSync(configPath, 'utf8');
+      const config = JSON.parse(configFile);
+      if (config.protectedBranches && Array.isArray(config.protectedBranches)) {
+        console.log(chalk.gray('✅ Loaded protected branches from .git-cleanup-config.json'));
+        return config.protectedBranches;
+      }
+    }
+    console.log(chalk.gray('ℹ️ Using default protected branches. Create .git-cleanup-config.json to override.'));
+    return defaults;
+  } catch (error) {
+    console.error(chalk.red('❌ Error reading or parsing config file:'), error.message);
+    console.log(chalk.yellow('⚠️ Falling back to default protected branches.'));
+    return defaults;
+  }
 }
 
 /**
  * Main function to run the script logic.
  */
 async function main() {
+  const { inquirer, chalk } = await getDependencies();
+  const isDryRun = process.argv.includes('--dry-run');
+
+  if (isDryRun) {
+    console.log(chalk.yellow.bold('🏃 Running in --dry-run mode. No branches will be deleted.\n'));
+  }
+
   // 1. Check if we are in a git repository
   try {
-    // Use execFileSync for safety, even with static commands.
     execFileSync('git', ['rev-parse', '--is-inside-work-tree'], { stdio: 'ignore' });
   } catch (e) {
-    console.error('❌ This is not a Git repository. Aborting.');
+    console.error(chalk.red('❌ This is not a Git repository. Aborting.'));
     process.exit(1);
   }
 
   // 2. Fetch and prune remote branches
-  console.log('🔄 Fetching and pruning remote branches...');
+  console.log(chalk.blue('🔄 Fetching and pruning remote branches...'));
   try {
-    // Use execFileSync to avoid shell interpretation.
     execFileSync('git', ['fetch', '-p'], { stdio: 'inherit' });
   } catch (e) {
-    console.error('❌ Failed to fetch from remote. Please check your connection and configuration.');
+    console.error(chalk.red('❌ Failed to fetch from remote. Please check your connection and configuration.'));
+    if (e.stderr) {
+      console.error(chalk.gray(e.stderr.toString()));
+    }
     process.exit(1);
   }
 
   // 3. Find local branches whose remote has been deleted
-  // Use execFileSync to safely execute the command.
   const branchesOutput = execFileSync('git', ['branch', '-vv'], { encoding: 'utf8' });
-  const protectedBranches = ['main', 'master', 'develop', 'dev'];
+  const protectedBranches = getProtectedBranches(chalk);
 
   const goneBranches = branchesOutput
     .split('\n')
-    .filter(line => line.includes(': gone]'))
-    .map(line => line.trim().split(' ')[0])
-    .filter(branch => !protectedBranches.includes(branch));
+    .filter((line) => line.includes(': gone]'))
+    .map((line) => line.trim().split(' ')[0])
+    .filter((branch) => !protectedBranches.includes(branch));
 
   if (goneBranches.length === 0) {
-    console.log('\n✅ Your local branches are clean. Nothing to do!');
+    console.log(chalk.green('\n✅ Your local branches are clean. Nothing to do!'));
     process.exit(0);
   }
 
   // 4. Use inquirer to ask which branches to delete
-  const inquirer = await getInquirer();
   const { branchesToDelete } = await inquirer.prompt([
     {
       type: 'checkbox',
       name: 'branchesToDelete',
-      message: 'Select local branches to delete (whose remote is gone):',
+      message:
+        'Select local branches to delete (whose remote is gone):' +
+        chalk.cyan('\n  (Press <space> to select, <a> to toggle all, <i> to invert selection)\n'),
       choices: goneBranches,
       loop: false,
     },
   ]);
 
   if (branchesToDelete.length === 0) {
-    console.log('👍 No branches selected. Operation cancelled.');
+    console.log(chalk.yellow('👍 No branches selected. Operation cancelled.'));
     process.exit(0);
   }
 
@@ -71,16 +109,16 @@ async function main() {
   // 5. Loop through selected branches and attempt to delete them
   for (const branch of branchesToDelete) {
     try {
-      // **VULNERABILITY FIXED**: Use execFileSync to safely delete the branch.
-      // The branch name is passed as a separate argument and is not interpreted by the shell.
-      execFileSync('git', ['branch', '-d', branch]);
-      console.log(`✅ Deleted ${branch}`);
+      if (isDryRun) {
+        console.log(chalk.green(`[Dry Run] ✅ Would delete ${branch}`));
+      } else {
+        execFileSync('git', ['branch', '-d', branch]);
+        console.log(chalk.green(`✅ Deleted ${branch}`));
+      }
     } catch (err) {
-      // If safe delete fails, check if it's because of unmerged changes
       if (err.message.includes('not fully merged')) {
-        console.warn(`⚠️  '${branch}' has unmerged changes.`);
-        
-        // Ask the user if they want to force delete
+        console.warn(chalk.yellow(`⚠️  '${branch}' has unmerged changes.`));
+
         const { forceDelete } = await inquirer.prompt([
           {
             type: 'confirm',
@@ -92,25 +130,37 @@ async function main() {
 
         if (forceDelete) {
           try {
-            // **VULNERABILITY FIXED**: Use execFileSync for the force delete command.
-            execFileSync('git', ['branch', '-D', branch]);
-            console.log(`💥 Force deleted ${branch}`);
+            if (isDryRun) {
+              console.log(chalk.magenta(`[Dry Run] 💥 Would force delete ${branch}`));
+            } else {
+              execFileSync('git', ['branch', '-D', branch]);
+              console.log(chalk.magenta(`💥 Force deleted ${branch}`));
+            }
           } catch (forceErr) {
-            console.error(`❌ Failed to force delete '${branch}': ${forceErr.message}`);
+            console.error(chalk.red(`❌ Failed to force delete '${branch}'.`));
+            if (forceErr.stderr) {
+              console.error(chalk.gray(forceErr.stderr.toString()));
+            }
           }
         } else {
-          console.log(`↪️  Skipped '${branch}'`);
+          console.log(chalk.gray(`↪️  Skipped '${branch}'`));
         }
       } else {
-        console.error(`❌ Failed to delete '${branch}': ${err.message}`);
+        console.error(chalk.red(`❌ Failed to delete '${branch}'.`));
+        if (err.stderr) {
+          console.error(chalk.gray(err.stderr.toString()));
+        }
       }
     }
   }
 
-  console.log('\n✨ Cleanup complete!');
+  console.log(chalk.bold.inverse('\n✨ Cleanup complete! ✨'));
 }
 
-main().catch(err => {
-  console.error('\nAn unexpected error occurred:', err);
+main().catch((err) => {
+  // Using chalk in the final catch for consistency
+  import('chalk').then(({ default: chalk }) => {
+    console.error(chalk.red('\nAn unexpected error occurred:'), err);
+  });
   process.exit(1);
 });
