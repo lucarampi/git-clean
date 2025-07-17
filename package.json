@@ -1,10 +1,19 @@
 {
+  "$schema": "https://json.schemastore.org/package",
   "name": "oh-my-git",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A simple CLI tool to clean up local Git branches whose remote counterparts have been deleted.",
   "main": "git-cleanup.js",
   "bin": {
     "omg-cleanup": "git-cleanup.js"
+  },
+  "author": {
+    "name": "Luca Alfaro Rampinelli"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucarampi/oh-my-git"
   },
   "type": "module",
   "scripts": {
@@ -17,8 +26,6 @@
     "branch",
     "noob"
   ],
-  "author": "Luca Alfaro Rampinelli",
-  "license": "MIT",
   "dependencies": {
     "inquirer": "^12.7.0"
   },
